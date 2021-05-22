@@ -51,19 +51,19 @@ class FillTheBlankEditing extends Plugin {
 			isObject: true,
 
 			// The fill can have many types, like date, name, surname, etc:
-			allowAttributes: ['name'],
+			allowAttributes: ['name', 'isImage'],
 		})
 	}
 
 	// generate random elemen id 
 	_generateSpanID(length) {
-    var result           = [];
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      	result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
-		}
-		return result.join('');
+		var result           = [];
+		var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		var charactersLength = characters.length;
+		for ( var i = 0; i < length; i++ ) {
+			result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
+			}
+			return result.join('');
 	}
 
 	// _createLabelMark() {
@@ -88,9 +88,17 @@ class FillTheBlankEditing extends Plugin {
 			},
 			model: (viewElement, { writer: modelWriter }) => {
 				// Extract the "name" from "{name}".
-				const name = viewElement.getChild(0).data.slice(1, -1)
+                console.log(viewElement.getChild(0))
+                let name;
+                let isImage = false;
+                if (viewElement.getChild(0).name !== "img") {
+                    name = viewElement.getChild(0).data.slice(1, -1)
+                } else {
+                    name = viewElement.getChild(0)._attrs.get("data-source")
+                    isImage = true
+                }
 
-				return modelWriter.createElement('fill', { name })
+				return modelWriter.createElement('fill', { name , isImage })
 			},
 		})
 
@@ -113,6 +121,7 @@ class FillTheBlankEditing extends Plugin {
 		// Helper method for both downcast converters.
 		function createFillView(modelItem, viewWriter) {
 			const name = modelItem.getAttribute('name')
+			const isImage = modelItem.getAttribute('isImage')
 			const fillView = viewWriter.createContainerElement('span', {
 				class: fillBg.class.replace(/[^\w\s]/gi, ''),
 				name: editorConfig.fillConfig,
@@ -120,8 +129,16 @@ class FillTheBlankEditing extends Plugin {
 			})
 
 			// Insert the fill name (as a text).
-			const innerText = viewWriter.createText(' ' + name + ' ')
-			viewWriter.insert(viewWriter.createPositionAt(fillView, 0), innerText)
+			let content;
+			// console.log('modelItem', modelItem);
+			// console.log('viewWriter', viewWriter);
+			// console.log('fillView', fillView);
+			if (isImage) {
+				content = viewWriter.createEmptyElement('img', { src: name, width: 128, "data-source": name });
+			} else {
+				content = viewWriter.createText(' ' + name + ' ');
+			}
+			viewWriter.insert(viewWriter.createPositionAt(fillView, 0), content);
 
 			return fillView
 		}
@@ -139,40 +156,79 @@ class FillTheBlankCommand extends Command {
 		 * [sweetStyle] is sweet alert property (https://sweetalert2.github.io/)
 		 */
 
-		let text = '0'
 		Swal.fire({
 			title: alertTitle,
-			input: 'text',
+			html: `<div class="input-group mb-3">
+        <textarea class="form-control" name="fill-input" rows="4" maxlength="100"></textarea>
+        <div class="input-group-append">
+		  <input type="file" id="fill-file" hidden accept="image/*">
+          <label class="btn btn-outline-secondary" for="fill-file">Image</label>
+        </div>
+      </div>
+      <div class="absolute-counter mb-3">
+	  You write &nbsp;<b><a id="count-text"> 0 </a></b>&nbsp; characters
+	</div>
+`,
 			showCancelButton: true,
 			customClass,
 			...sweetStyle,
-			inputValidator: (value) => {
-				if (value) {
-					_setValue(value)
-				} else if (!value) {
-					return errorMessage
+			input: 'text',
+			inputValidator: _ => {
+				let contentContainer = Swal.getHtmlContainer();
+				let inputText = document.querySelector(`#${contentContainer.id} textarea[name="fill-input"]`);
+				let inputFile = document.querySelector(`#${contentContainer.id} input#fill-file`);
+				if (inputFile.files.length || inputText.value) {
+					_setValue(!inputFile.files.length ? inputText.value : inputFile.files[0], !!inputFile.files.length);
+					return;
 				}
+				return errorMessage;
 			},
 			onOpen: () => {
-				const input = Swal.getInput()
-				input.oninput = (value) => {
-					input.preventDefault()
-					// text = document.querySelector('.swal2-input').value.length
-					document.querySelector('#count-text').text = document.querySelector('.swal2-input').value.length
-					// console.log(input)
+				let swalContent = Swal.getContent();
+				let contentContainer = Swal.getHtmlContainer();
+				let defaultInput = document.querySelector(`.${swalContent.classList[0]} input.swal2-input`);
+				let inputText = document.querySelector(`#${contentContainer.id} textarea[name="fill-input"]`);
+				let inputFile = document.querySelector(`#${contentContainer.id} input#fill-file`);
+				// let uploadCommand = editor.commands.get('uploadImage');
+
+				/* Force style change to UI */
+				contentContainer.style.position = 'inherit';
+				defaultInput.style.display = 'none';
+
+				inputText.oninput = _ => {
+					document.querySelector(`#${contentContainer.id} #count-text`).innerHTML = inputText.value.length
+				}
+
+				inputFile.onchange = (event) => {
+					if (!event.target.files.length) {
+						return false;
+					}
+					Swal.getConfirmButton().click()
+					// editor.execute(uploadCommand, { file: event.target.files[0] });
 				}
 			},
-			html: 'You write ' +
-			'<b><a id="count-text">0</a></b> ' +
-			'characters',
 		})
 
-		const _setValue = (value) => {
+		const _fileToBase64 = file => {
+			return new Promise((resolve) => {
+				const reader = new FileReader()
+				reader.onloadend = () => resolve(reader.result)
+				reader.readAsDataURL(file)
+			});
+		}
+
+		const _setValue = async (value, isImage = false) => {
+			// console.log(value);
+			// console.log(isImage);
+			if (isImage) {
+				value = await _fileToBase64(value);
+			}
 			editor.model.change((writer) => {
 				// const simpleBox = writer.createElement('simpleBox')
 				// Create a <fill> elment with the "name" attribute...
 				const fill = writer.createElement('fill', {
 					name: value,
+					isImage: isImage
 				})
 				// writer.append(fill, simpleBox)
 
