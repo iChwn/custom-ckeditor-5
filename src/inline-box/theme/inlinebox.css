@@ -1,0 +1,20 @@
+/* fill the blank css */
+.fill {
+	background: #ffff00;
+	padding: 4px 2px;
+	outline-offset: -2px;
+	line-height: 1em;
+	margin: 0 1px;
+	border: 1px solid lightgray;
+}
+.fill.orange {
+	background: #FEBD1E;
+}
+.fill.lightorange {
+	background: rgba(254, 189, 30, 0.2);
+	color: #FEBD1E;
+}
+
+.fill::selection {
+	display: none;
+}
