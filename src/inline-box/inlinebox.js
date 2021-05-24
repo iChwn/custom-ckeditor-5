@@ -88,7 +88,6 @@ class FillTheBlankEditing extends Plugin {
 			},
 			model: (viewElement, { writer: modelWriter }) => {
 				// Extract the "name" from "{name}".
-                console.log(viewElement.getChild(0))
                 let name;
                 let isImage = false;
                 if (viewElement.getChild(0).name !== "img") {
