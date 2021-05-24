@@ -183,7 +183,8 @@ class FillTheBlankCommand extends Command {
 				}
 				return errorMessage;
 			},
-			onOpen: () => {
+			didOpen: () => {
+				editorConfig.onSwalOpen(true);
 				let swalContent = Swal.getContent();
 				let contentContainer = Swal.getHtmlContainer();
 				let defaultInput = document.querySelector(`.${swalContent.classList[0]} input.swal2-input`);
@@ -207,6 +208,9 @@ class FillTheBlankCommand extends Command {
 					// editor.execute(uploadCommand, { file: event.target.files[0] });
 				}
 			},
+			willClose: () => {
+				editorConfig.onSwalOpen(false);
+			}
 		})
 
 		const _fileToBase64 = file => {

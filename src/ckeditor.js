@@ -189,7 +189,9 @@ IchEditor.defaultConfig = {
 		fillBg: {
 			class: '.fill',
 		},
-	}
+	},
+	onSwalOpen: () => false,
+	onSwalClose: () => false
 }
 
 export default IchEditor
