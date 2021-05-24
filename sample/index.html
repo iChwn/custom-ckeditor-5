@@ -92,6 +92,9 @@
 			},
 	 
 		},
+		onSwalOpen: value => console.log(value),
+		onSwalClose: value => console.log(value),
+		onUpcast: value => console.log(value)
 	})
 		.then( editor => {
 			window.editor = editor;

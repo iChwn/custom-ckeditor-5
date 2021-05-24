@@ -191,7 +191,8 @@ IchEditor.defaultConfig = {
 		},
 	},
 	onSwalOpen: () => false,
-	onSwalClose: () => false
+	onSwalClose: () => false,
+	onUpcast: () => false
 }
 
 export default IchEditor

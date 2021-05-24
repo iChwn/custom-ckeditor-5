@@ -88,13 +88,16 @@ class FillTheBlankEditing extends Plugin {
 			},
 			model: (viewElement, { writer: modelWriter }) => {
 				// Extract the "name" from "{name}".
+				console.log(viewElement);
+				console.log(viewElement.getChild(0));
+				editorConfig.onUpcast(true);
                 let name;
                 let isImage = false;
-                if (viewElement.getChild(0).name !== "img") {
+				if (viewElement.getChild(0).name && viewElement.getChild(0).name === "img") {
+					name = viewElement.getChild(0)._attrs.get("data-source")
+					isImage = true
+				} else {
                     name = viewElement.getChild(0).data.slice(1, -1)
-                } else {
-                    name = viewElement.getChild(0)._attrs.get("data-source")
-                    isImage = true
                 }
 
 				return modelWriter.createElement('fill', { name , isImage })
