@@ -161,13 +161,13 @@ class FillTheBlankCommand extends Command {
 			html: `<div class="input-group mb-3">
         <textarea class="form-control" name="fill-input" rows="4" maxlength="100"></textarea>
         <div class="input-group-append">
-		  <input type="file" id="fill-file" hidden accept="image/*">
-          <label class="btn btn-outline-secondary" for="fill-file">Image</label>
-        </div>
-      </div>
-      <div class="absolute-counter mb-3">
-	  You write &nbsp;<b><a id="count-text"> 0 </a></b>&nbsp; characters
-	</div>
+						<input type="file" id="fill-file" hidden accept="image/*">
+								<label class="btn btn-outline-secondary text-white" for="fill-file">Image</label>
+							</div>
+						</div>
+						<div class="absolute-counter mb-3">
+					You write &nbsp;<b><a id="count-text"> 0 </a></b>&nbsp; characters
+				</div>
 `,
 			showCancelButton: true,
 			customClass,

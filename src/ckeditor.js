@@ -48,6 +48,7 @@ import FontSize from '@ckeditor/ckeditor5-font/src/fontsize.js'
 import Heading from '@ckeditor/ckeditor5-heading/src/heading'
 import Image from '@ckeditor/ckeditor5-image/src/image'
 import ImageCaption from '@ckeditor/ckeditor5-image/src/imagecaption'
+import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize'
 import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle'
 import ImageToolbar from '@ckeditor/ckeditor5-image/src/imagetoolbar'
 import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload'
@@ -82,6 +83,7 @@ IchEditor.builtinPlugins = [
 	Heading, //must be imported
 	Image,
 	ImageCaption,
+	ImageResize,
 	ImageStyle,
 	ImageToolbar,
 	ImageUpload,
@@ -140,9 +142,34 @@ IchEditor.defaultConfig = {
 		],
 	},
 	image: {
+		styles: [
+			'alignLeft', 'alignCenter', 'alignRight'
+		],
+		resizeOptions: [
+			{
+					name: 'resizeImage:original',
+					value: null,
+					icon: 'original'
+			},
+			{
+					name: 'resizeImage:50',
+					value: '50',
+					icon: 'medium'
+			},
+			{
+					name: 'resizeImage:75',
+					value: '75',
+					icon: 'large'
+			}
+		],
 		toolbar: [
-			'imageStyle:full',
-			'imageStyle:side',
+			'imageStyle:alignLeft', 
+			'imageStyle:alignCenter', 
+			'imageStyle:alignRight',
+			'|',
+			'resizeImage:50',
+			'resizeImage:75',
+			'resizeImage:original',
 			'|',
 			'imageTextAlternative',
 		],
