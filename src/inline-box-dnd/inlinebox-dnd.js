@@ -85,10 +85,17 @@ class FillTheBlankEditingDnD extends Plugin {
 				classes: fillBg.class.replace(/[^\w\s]/gi, ''),
 			},
 			model: (viewElement, { writer: modelWriter }) => {
-				// Extract the "name" from "{name}".
 				// console.log(viewElement.getChild(0))
-				let name = viewElement.getChild(0).data.slice(1, -1)
-				return modelWriter.createElement('fillDnD', { name })
+				let name;
+				let isImage = false;
+				if (viewElement.getChild(0).name !== "img") {
+						name = viewElement.getChild(0).data.slice(1, -1)
+				} else {
+						name = viewElement.getChild(0)._attrs.get("data-source")
+						isImage = true
+				}
+
+				return modelWriter.createElement('fill', { name , isImage })
 			},
 		})
 
