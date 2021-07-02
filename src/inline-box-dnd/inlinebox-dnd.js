@@ -95,7 +95,7 @@ class FillTheBlankEditingDnD extends Plugin {
 						isImage = true
 				}
 
-				return modelWriter.createElement('fill', { name , isImage })
+				return modelWriter.createElement('fillDnD', { name , isImage })
 			},
 		})
 
