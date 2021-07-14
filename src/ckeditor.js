@@ -36,6 +36,7 @@ import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment'
 import Autoformat from '@ckeditor/ckeditor5-autoformat/src/autoformat'
 import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold'
 import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic'
+import Strikethrough from '@ckeditor/ckeditor5-basic-styles/src/strikethrough'
 import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline'
 import CKFinder from '@ckeditor/ckeditor5-ckfinder/src/ckfinder'
 // import EasyImage from '@ckeditor/ckeditor5-easy-image/src/easyimage'
@@ -65,6 +66,7 @@ import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar'
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation'
 import Base64UploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/base64uploadadapter'
 import MathType from '@wiris/mathtype-ckeditor5'
+import FillDnD from './inline-box-dnd/inlinebox-dnd'
 import Fill from './inline-box/inlinebox'
 // import SimpleBox from './sample-box/simplebox'
 
@@ -76,6 +78,7 @@ IchEditor.builtinPlugins = [
 	UploadAdapter,
 	Autoformat,
 	Bold,
+	Strikethrough,
 	Italic,
 	Underline,
 	CKFinder,
@@ -104,6 +107,7 @@ IchEditor.builtinPlugins = [
 	FontFamily,
 	FontSize,
 	Alignment,
+	FillDnD,
 	Fill,
 	Base64UploadAdapter,
 ];
@@ -115,6 +119,7 @@ IchEditor.defaultConfig = {
 			'heading',
 			'|',
 			'bold',
+			'strikethrough',
 			'italic',
 			'underline',
 			// 'link',
@@ -138,6 +143,7 @@ IchEditor.defaultConfig = {
 			'|',
 			'MathType',
 			'ChemType',
+			'fillDnD',
 			'fill',
 		],
 	},
@@ -200,6 +206,7 @@ IchEditor.defaultConfig = {
 	},
 	fillConfig: "",
 	isFIllDisable: true,
+	isFIllDndDisable: true,
 	alertConfig: {
 		errorMessage: "You need to write the Answer!",
 		alertTitle: "Fill the Answer",
